@@ -17,7 +17,7 @@ export default function CharacterCard({
   item_level,
 }: CharacterCardProps) {
   return (
-    <Card className="w-full max-w-md transition-colors hover:bg-gray-50">
+    <Card className="w-full max-w-md transition-colors hover:bg-slate-900">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -27,18 +27,16 @@ export default function CharacterCard({
             </Avatar>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="text-lg font-semibold">{name}</h3>
+              <p className="text-sm">
                 {class_name} - {spec}
               </p>
             </div>
           </div>
 
           <div className="flex flex-col items-end">
-            <span className="text-sm text-gray-500">Item Level</span>
-            <span className="text-lg font-bold text-gray-900">
-              {item_level}
-            </span>
+            <span className="text-sm">Item Level</span>
+            <span className="text-lg font-bold">{item_level}</span>
           </div>
         </div>
       </CardContent>

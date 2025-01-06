@@ -31,13 +31,11 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen py-8">
         <div className="mx-auto max-w-4xl px-4">
           <header className="mb-12 text-center">
-            <h1 className="text-5xl font-bold text-gray-900">The Revenants</h1>
-            <p className="mt-2 text-gray-600">
-              Track the Raider&apos;s item levels
-            </p>
+            <h1 className="text-5xl font-bold">The Revenants</h1>
+            <p className="mt-2">Track the Raider&apos;s item levels</p>
           </header>
 
           <div className="flex flex-col items-center space-y-4">
