@@ -4,7 +4,14 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { Character } from "@/types";
 import { RaiderIOClient } from "@/lib/api";
 
-const RETRY_INTERVAL = 60 * 60 * 24;
+const RETRY_INTERVAL = 60 * 60 * 1000;
+
+const needsUpdated = (lastUpdate: Date): boolean => {
+  const now = new Date();
+
+  const timeSinceLastUpdate = now.getTime() - lastUpdate.getTime();
+  return timeSinceLastUpdate > RETRY_INTERVAL;
+};
 
 export const characterRoute = createTRPCRouter({
   get: publicProcedure
@@ -20,7 +27,10 @@ export const characterRoute = createTRPCRouter({
         },
       });
 
-      if (!dbCharacter) {
+      if (
+        !dbCharacter ||
+        (dbCharacter && needsUpdated(dbCharacter.lastUpdated))
+      ) {
         const result = await RaiderIOClient.GetCharacter(
           input.name,
           input.region,
@@ -39,16 +49,8 @@ export const characterRoute = createTRPCRouter({
             region: input.region,
           },
         });
-
-        return null;
       }
 
-      const result = await RaiderIOClient.GetCharacter(
-        input.name,
-        input.region,
-        input.realm,
-      );
-
-      return result;
+      return dbCharacter;
     }),
 });

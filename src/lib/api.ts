@@ -11,7 +11,7 @@ const gearResponseSchema = z.object({
 const characterResponseSchema = z.object({
   name: z.string(),
   race: z.string(),
-  class_name: z.string(),
+  class: z.string(),
   active_spec_name: z.string(),
   active_spec_role: z.string(),
   gender: z.string(),
@@ -39,20 +39,22 @@ async function GetCharacter(
       name,
       region,
       realm,
+      fields: ["gear"],
     },
   });
 
   const response = await fetch(requestUrl);
 
-  const result = await characterResponseSchema.safeParseAsync(response.json());
+  const result = characterResponseSchema.safeParse(await response.json());
 
   if (!result.success) {
-    throw Error("There was a parsing error: ", result.error);
+    console.log("Thingy: ", result.error);
+    throw Error("There was a parsing error: ");
   }
 
   return {
     name: result.data.name,
-    class_name: result.data.class_name,
+    class_name: result.data.class,
     spec: result.data.active_spec_name,
     image: result.data.thumbnail_url,
     item_level: result.data.gear.item_level_equipped,
