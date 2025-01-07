@@ -1,46 +1,28 @@
 import { api, HydrateClient } from "@/trpc/server";
 import CharacterCard from "@/components/character-card";
-import { Character } from "@/types";
+import type { Character } from "@/types";
+import characters from "@/static/characters.json";
+import { Suspense } from "react";
+import SkeletonCard from "@/components/skeleton-card";
 
-const getData = async (): Promise<Character> => {
-  const character = await api.character.get({
-    name: "Koalth",
-    region: "US",
-    realm: "dalaran",
+const getData = async (): Promise<Character[]> => {
+  const characterPromises = characters.map((char) => {
+    return api.character.get({
+      name: char,
+      region: "US",
+      realm: "dalaran",
+    });
   });
 
-  return character;
+  const characterData = (await Promise.allSettled(characterPromises))
+    .filter((i) => i.status === "fulfilled")
+    .map((i) => i.value!);
+
+  return characterData;
 };
 
 export default async function Home() {
-  // const data = [
-  //   {
-  //     name: "Koalth",
-  //     class_name: "Mage",
-  //     spec: "Arcane",
-  //     thumbnail_url:
-  //       "https://render.worldofwarcraft.com/us/character/dalaran/123/227963515-avatar.jpg?alt=/wow/static/images/2d/avatar/1-0.jpg",
-  //     item_level: 639,
-  //   },
-  //   {
-  //     name: "Koalth",
-  //     class_name: "Mage",
-  //     spec: "Arcane",
-  //     thumbnail_url:
-  //       "https://render.worldofwarcraft.com/us/character/dalaran/123/227963515-avatar.jpg?alt=/wow/static/images/2d/avatar/1-0.jpg",
-  //     item_level: 639,
-  //   },
-  //   {
-  //     name: "Koalth",
-  //     class_name: "Mage",
-  //     spec: "Arcane",
-  //     thumbnail_url:
-  //       "https://render.worldofwarcraft.com/us/character/dalaran/123/227963515-avatar.jpg?alt=/wow/static/images/2d/avatar/1-0.jpg",
-  //     item_level: 639,
-  //   },
-  // ];
-
-  const character = await getData();
+  const characters = await getData();
 
   return (
     <HydrateClient>
@@ -52,17 +34,11 @@ export default async function Home() {
           </header>
 
           <div className="flex flex-col items-center space-y-4">
-            <CharacterCard character={character} />
-            {/* {data.map((char, index) => (
-              <CharacterCard
-                key={index}
-                name={char.name}
-                item_level={char.item_level}
-                thumbnail_url={char.thumbnail_url}
-                spec={char.spec}
-                class_name={char.class_name}
-              />
-            ))} */}
+            {characters.map((char, index) => (
+              <Suspense key={char.name} fallback={<SkeletonCard />}>
+                <CharacterCard key={`${char.name}_${index}`} character={char} />
+              </Suspense>
+            ))}
           </div>
         </div>
       </div>

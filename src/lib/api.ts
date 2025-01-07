@@ -26,13 +26,11 @@ const characterResponseSchema = z.object({
   gear: gearResponseSchema,
 });
 
-type CharacterResponse = z.infer<typeof characterResponseSchema>;
-
 async function GetCharacter(
   name: string,
   region: string,
   realm: string,
-): Promise<Character> {
+): Promise<Character | null> {
   const requestUrl = buildUrl("https://raider.io", {
     path: "api/v1/characters/profile",
     queryParams: {
@@ -45,11 +43,16 @@ async function GetCharacter(
 
   const response = await fetch(requestUrl);
 
+  if (!response.ok) {
+    console.error("Response was not okay");
+    return null;
+  }
+
   const result = characterResponseSchema.safeParse(await response.json());
 
   if (!result.success) {
-    console.log("Thingy: ", result.error);
-    throw Error("There was a parsing error: ");
+    console.error("Error: ", result.error);
+    return null;
   }
 
   return {

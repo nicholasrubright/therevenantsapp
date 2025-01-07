@@ -37,8 +37,12 @@ export const characterRoute = createTRPCRouter({
           input.realm,
         );
 
-        return await ctx.db.character.create({
-          data: {
+        if (!result) {
+          return null;
+        }
+
+        return await ctx.db.character.upsert({
+          create: {
             name: result.name,
             class_name: result.class_name,
             spec: result.spec,
@@ -47,6 +51,18 @@ export const characterRoute = createTRPCRouter({
 
             realm: input.realm,
             region: input.region,
+          },
+          update: {
+            item_level: result.item_level,
+            spec: result.spec,
+            class_name: result.class_name,
+            image: result.image,
+            lastUpdated: new Date(),
+          },
+          where: {
+            name: input.name,
+            region: input.region,
+            realm: input.realm,
           },
         });
       }
