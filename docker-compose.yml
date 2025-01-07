@@ -1,0 +1,31 @@
+services:
+  db:
+    container_name: db
+    image: postgres
+    volumes:
+      - db:/data/postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=therevenantsdb
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: always
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db:

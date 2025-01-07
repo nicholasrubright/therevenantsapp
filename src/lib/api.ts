@@ -55,7 +55,7 @@ async function GetCharacter(
     class_name: result.data.class_name,
     spec: result.data.active_spec_name,
     image: result.data.thumbnail_url,
-    item_level: result.data.gear.item_level_total,
+    item_level: result.data.gear.item_level_equipped,
   };
 }
 
