@@ -1,16 +1,14 @@
 import { api, HydrateClient } from "@/trpc/server";
 import CharacterCard from "@/components/character-card";
-import type { Character } from "@/types";
-import characters from "@/static/characters.json";
-import { Suspense } from "react";
-import SkeletonCard from "@/components/skeleton-card";
+import type { Character, Config, Profile } from "@/types";
+import config from "@/static/config.json";
 
-const getData = async (): Promise<Character[]> => {
-  const characterPromises = characters.map((char) => {
+const getData = async (profiles: Profile[]): Promise<Character[]> => {
+  const characterPromises = profiles.map((char) => {
     return api.character.get({
-      name: char,
+      name: char.name,
       region: "US",
-      realm: "dalaran",
+      realm: char.realm.toLowerCase(),
     });
   });
 
@@ -22,7 +20,9 @@ const getData = async (): Promise<Character[]> => {
 };
 
 export default async function Home() {
-  const characters = await getData();
+  const appConfig: Config = config;
+
+  const characters = await getData(appConfig.profiles);
 
   return (
     <HydrateClient>
@@ -31,13 +31,15 @@ export default async function Home() {
           <header className="mb-12 text-center">
             <h1 className="text-5xl font-bold">The Revenants</h1>
             <p className="mt-2">Track the Raider&apos;s item levels</p>
+            <p>Required item level: {appConfig.min_item_level}</p>
+            {/* <div className="flex flex-row items-center justify-center gap-5">
+              <p>Updated as of {new Date().toDateString()}</p>
+            </div> */}
           </header>
 
           <div className="flex flex-col items-center space-y-4">
             {characters.map((char, index) => (
-              <Suspense key={char.name} fallback={<SkeletonCard />}>
-                <CharacterCard key={`${char.name}_${index}`} character={char} />
-              </Suspense>
+              <CharacterCard key={`${char.name}_${index}`} character={char} />
             ))}
           </div>
         </div>

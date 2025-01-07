@@ -1,12 +1,17 @@
 import { Character } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Card, CardContent } from "./ui/card";
+import config from "@/static/config.json";
+import type { Config } from "@/types";
+import clsx from "clsx";
 
 interface CharacterCardProps {
   character: Character;
 }
 
 export default function CharacterCard({ character }: CharacterCardProps) {
+  const appConfig: Config = config;
+
   return (
     <Card className="w-full max-w-md transition-colors hover:bg-muted/20">
       <CardContent className="p-6">
@@ -27,7 +32,16 @@ export default function CharacterCard({ character }: CharacterCardProps) {
 
           <div className="flex flex-col items-end">
             <span className="text-sm">Item Level</span>
-            <span className="text-lg font-bold">{character.item_level}</span>
+            <span
+              className={clsx(
+                "text-lg font-bold",
+                appConfig.min_item_level > character.item_level
+                  ? "text-destructive"
+                  : "text-green-600",
+              )}
+            >
+              {character.item_level}
+            </span>
           </div>
         </div>
       </CardContent>

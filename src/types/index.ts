@@ -5,3 +5,13 @@ export type Character = {
   image: string;
   item_level: number;
 };
+
+export type Profile = {
+  name: string;
+  realm: string;
+};
+
+export type Config = {
+  profiles: Profile[];
+  min_item_level: number;
+};

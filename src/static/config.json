@@ -1,0 +1,7 @@
+{
+    "profiles": [{
+        "name": "Turing",
+        "realm": "Dalaran"
+    }, {"name": "Koalth", "realm": "Dalaran"}],
+    "min_item_level": 600
+}
