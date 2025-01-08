@@ -1,4 +1,22 @@
 services:
+  app:
+    container_name: app
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    image: t3-app
+    env_file:
+      - .docker.env
+    networks:
+      - app-network
+    depends_on:
+      - db
   db:
     container_name: db
     image: postgres
