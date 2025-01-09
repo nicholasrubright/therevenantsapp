@@ -69,4 +69,18 @@ export const characterRoute = createTRPCRouter({
 
       return dbCharacter;
     }),
+
+  lastUpdated: publicProcedure.query(async ({ ctx }) => {
+    const lastUpdated = await ctx.db.character.findMany({
+      select: {
+        lastUpdated: true,
+      },
+      orderBy: {
+        lastUpdated: "desc",
+      },
+      take: 1,
+    });
+
+    return lastUpdated[0] ?? null;
+  }),
 });
