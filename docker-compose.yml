@@ -1,18 +1,24 @@
 services:
   db:
-    container_name: db
+    container_name: ${POSTGRES_CONTAINER_NAME:-db}
     image: postgres
-    volumes:
-      - db:/data/postgres
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=therevenantsdb
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
   adminer:
     container_name: adminer
     image: adminer
@@ -22,10 +28,29 @@ services:
     networks:
       - app-network
 
+  prisma-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.prisma
+    container_name: ${PRISMA_CONTAINER_NAME:-prisma_migrate}
+    networks:
+      - app-network
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      - NODE_ENV=${NODE_ENV:-development}
+      - DIRECT_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./prisma:/app/prisma
+      # - /Users/nicholas/dev/koalth/therevenantsapp/prisma⁠:/app/prisma
+
 
 networks:
   app-network:
     driver: bridge
 
 volumes:
-  db:
+  pgdata:
+    name: ${POSTGRES_VOLUME_NAME:-pgdata}
