@@ -1,6 +1,7 @@
 import type { Character } from "@/types";
 import { buildUrl } from "build-url-ts";
 import { z } from "zod";
+import pLimit from "p-limit";
 
 const gearResponseSchema = z.object({
   updated_at: z.string(),
@@ -31,37 +32,40 @@ async function GetCharacter(
   region: string,
   realm: string,
 ): Promise<Character | null> {
-  const requestUrl = buildUrl("https://raider.io", {
-    path: "api/v1/characters/profile",
-    queryParams: {
-      name,
-      region,
-      realm,
-      fields: ["gear"],
-    },
-  });
+  try {
+    const requestUrl = buildUrl("https://raider.io", {
+      path: "api/v1/characters/profile",
+      queryParams: {
+        name,
+        region,
+        realm,
+        fields: ["gear"],
+      },
+    });
 
-  const response = await fetch(requestUrl);
+    const response = await fetch(requestUrl);
 
-  if (!response.ok) {
-    console.error("Response was not okay");
-    return null;
+    if (!response.ok) {
+      throw new Error(`API request failed for player ${name}`);
+    }
+
+    const result = characterResponseSchema.safeParse(await response.json());
+
+    if (!result.success) {
+      throw new Error(`Parsing failed for player ${name}`);
+    }
+
+    return {
+      name: result.data.name,
+      class_name: result.data.class,
+      spec: result.data.active_spec_name,
+      image: result.data.thumbnail_url,
+      item_level: result.data.gear.item_level_equipped,
+    };
+  } catch (error) {
+    console.error(`Error fetching player ${name}: `, error);
+    throw error;
   }
-
-  const result = characterResponseSchema.safeParse(await response.json());
-
-  if (!result.success) {
-    console.error("Error: ", result.error);
-    return null;
-  }
-
-  return {
-    name: result.data.name,
-    class_name: result.data.class,
-    spec: result.data.active_spec_name,
-    image: result.data.thumbnail_url,
-    item_level: result.data.gear.item_level_equipped,
-  };
 }
 
 export const RaiderIOClient = { GetCharacter };

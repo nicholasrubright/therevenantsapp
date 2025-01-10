@@ -4,33 +4,31 @@ import type { Character, Config, Profile } from "@/types";
 import config from "@/static/config.json";
 
 const getData = async (profiles: Profile[]): Promise<Character[]> => {
-  const characterPromises = profiles.map((char) => {
-    return api.character.get({
-      name: char.name,
+  const profileData = profiles.map((p) => {
+    return {
+      name: p.name,
       region: "US",
-      realm: char.realm.toLowerCase(),
-    });
+      realm: p.realm,
+    };
   });
 
-  const characterData = (await Promise.allSettled(characterPromises))
-    .filter((i) => i.status === "fulfilled")
-    .map((i) => i.value!);
+  const players = await api.character.get(profileData);
 
-  return characterData;
+  return players.sort((a, b) => b.item_level - a.item_level);
 };
 
-const getLastUpdated = async () => {
-  const data = await api.character.lastUpdated();
+// const getLastUpdated = async () => {
+//   const data = await api.character.lastUpdated();
 
-  return data?.lastUpdated;
-};
+//   return data?.lastUpdated;
+// };
 
 export default async function Home() {
   const appConfig: Config = config;
 
   const characters = await getData(appConfig.profiles);
 
-  const lastUpdated = await getLastUpdated();
+  // const lastUpdated = await getLastUpdated();
 
   return (
     <HydrateClient>

@@ -1,7 +1,26 @@
 {
-    "profiles": [{
-        "name": "Turing",
-        "realm": "Dalaran"
-    }, {"name": "Koalth", "realm": "Dalaran"}],
-    "min_item_level": 600
+  "profiles": [
+    {
+      "name": "Turing",
+      "realm": "Dalaran"
+    },
+    { "name": "Levic", "realm": "Dalaran" },
+    {
+      "name": "Searust",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Revenìr",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Vampryss",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Evëyln",
+      "realm": "Dalaran"
+    }
+  ],
+  "min_item_level": 600
 }
