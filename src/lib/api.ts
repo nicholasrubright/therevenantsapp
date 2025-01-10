@@ -1,7 +1,6 @@
 import type { Character } from "@/types";
 import { buildUrl } from "build-url-ts";
 import { z } from "zod";
-import pLimit from "p-limit";
 
 const gearResponseSchema = z.object({
   updated_at: z.string(),
@@ -61,6 +60,8 @@ async function GetCharacter(
       spec: result.data.active_spec_name,
       image: result.data.thumbnail_url,
       item_level: result.data.gear.item_level_equipped,
+      realm: result.data.realm,
+      region: result.data.region,
     };
   } catch (error) {
     console.error(`Error fetching player ${name}: `, error);

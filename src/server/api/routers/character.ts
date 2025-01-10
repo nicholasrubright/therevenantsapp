@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { Character } from "@/types";
+import type { Character } from "@/types";
 import { RaiderIOClient } from "@/lib/api";
 import pLimit from "p-limit";
 import { TRPCError } from "@trpc/server";
@@ -59,7 +59,33 @@ export const characterRoute = createTRPCRouter({
           (result): result is PromiseFulfilledResult<Character> =>
             result.status === "fulfilled",
         )
-        .map((result) => result.value);
+        .map((result) => ({
+          name: result.value.name,
+          class_name: result.value.class_name,
+          spec: result.value.spec,
+          image: result.value.image,
+          item_level: result.value.item_level,
+          region: result.value.region,
+          realm: result.value.realm,
+        }));
+
+      let newlyAddedPlayers: Character[] = [];
+      if (fetchedPlayers.length > 0) {
+        newlyAddedPlayers = await ctx.db.character
+          .createMany({
+            data: fetchedPlayers,
+            skipDuplicates: true,
+          })
+          .then(() =>
+            ctx.db.character.findMany({
+              where: {
+                name: {
+                  in: fetchedPlayers.map((p) => p.name),
+                },
+              },
+            }),
+          );
+      }
 
       const failedPlayers = newPlayers
         .filter(
@@ -72,7 +98,7 @@ export const characterRoute = createTRPCRouter({
         console.error("Failed to fetched some players: ", failedPlayers);
       }
 
-      return [...existingPlayers, ...fetchedPlayers];
+      return [...existingPlayers, ...newlyAddedPlayers];
     } catch (err) {
       console.error(`Error in get: `, err);
       throw new TRPCError({

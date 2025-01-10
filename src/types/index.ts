@@ -4,6 +4,8 @@ export type Character = {
   spec: string;
   image: string;
   item_level: number;
+  region: string;
+  realm: string;
 };
 
 export type Profile = {
