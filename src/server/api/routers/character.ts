@@ -54,7 +54,7 @@ export const characterRoute = createTRPCRouter({
 
       const newPlayers = await Promise.allSettled(fetchPromises);
 
-      const fetchedPlayers = newPlayers
+      const fetchedPlayers: Character[] = newPlayers
         .filter(
           (result): result is PromiseFulfilledResult<Character> =>
             result.status === "fulfilled",
@@ -67,6 +67,7 @@ export const characterRoute = createTRPCRouter({
           item_level: result.value.item_level,
           region: result.value.region,
           realm: result.value.realm,
+          last_crawled: result.value.last_crawled,
         }));
 
       let newlyAddedPlayers: Character[] = [];
@@ -119,6 +120,6 @@ export const characterRoute = createTRPCRouter({
       take: 1,
     });
 
-    return lastUpdated[0] ?? null;
+    return lastUpdated[0];
   }),
 });

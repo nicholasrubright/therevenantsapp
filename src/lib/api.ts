@@ -62,6 +62,7 @@ async function GetCharacter(
       item_level: result.data.gear.item_level_equipped,
       realm: result.data.realm,
       region: result.data.region,
+      last_crawled: new Date(result.data.last_crawled_at),
     };
   } catch (error) {
     console.error(`Error fetching player ${name}: `, error);

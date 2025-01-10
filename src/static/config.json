@@ -20,7 +20,31 @@
     {
       "name": "Evëyln",
       "realm": "Dalaran"
+    },
+    {
+      "name": "Cheatêr",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Drujim",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Hül",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Skíppý",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Caspthedog",
+      "realm": "Dalaran"
+    },
+    {
+      "name": "Tandao",
+      "realm": "Moon Guard"
     }
   ],
-  "min_item_level": 600
+  "min_item_level": 630
 }

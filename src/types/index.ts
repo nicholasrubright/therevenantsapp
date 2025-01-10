@@ -6,6 +6,7 @@ export type Character = {
   item_level: number;
   region: string;
   realm: string;
+  last_crawled: Date;
 };
 
 export type Profile = {
