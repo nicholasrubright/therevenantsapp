@@ -1,7 +1,7 @@
 import { api, HydrateClient } from "@/trpc/server";
 import CharacterCard from "@/components/character-card";
 import type { Character, Config, Profile } from "@/types";
-import config from "@/static/config.json";
+import { config } from "@/constants/config";
 import { RefreshCcw } from "lucide-react";
 import { formatTimeAgo } from "@/lib/utils";
 
@@ -33,6 +33,10 @@ export default async function Home() {
   const characters = await getData(appConfig.profiles);
   const lastUpdated = await getLastUpdated();
 
+  const lastUpdatedFormatted: string = lastUpdated
+    ? formatTimeAgo(new Date())
+    : "Idk";
+
   return (
     <HydrateClient>
       <div className="min-h-screen py-8">
@@ -45,10 +49,7 @@ export default async function Home() {
             <div className="flex flex-row items-center justify-center gap-8 text-sm text-gray-400">
               <div className="flex flex-row items-center">
                 <RefreshCcw className="mr-2 h-4 w-4" />
-                <p>
-                  Last API refresh{" "}
-                  {lastUpdated ? formatTimeAgo(new Date()) : "Idk"}
-                </p>
+                <p>Last API refresh {lastUpdatedFormatted}</p>
               </div>
 
               <p>Required item level: {appConfig.min_item_level}</p>
